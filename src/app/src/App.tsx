@@ -8,6 +8,12 @@ import Settings from './pages/Settings';
 import MyDashboard from './pages/Dashboard/My Dashboad';
 import Login from './pages/Authentication/LogIn';
 import Register from './pages/Authentication/Register';
+import FeedBack from './pages/Feedback';
+import FAQ from './pages/Faqs';
+import FoodPlans from './pages/FoodPlans';
+import ExercisePlans from './pages/ExercisePlans';
+import FoodPlanCreation from './pages/FoodPlanCreation';
+import ExercisepPlanCreation from './pages/ExercisePlanCreation';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -60,15 +66,69 @@ function App() {
           }
         />
         <Route
+          path="/myexerciseplans"
+          element={
+            <>
+              <PageTitle title="Exercise Plans" />
+              <ExercisePlans />
+            </>
+          }
+        />
+        <Route
+          path="/myfoodplans"
+          element={
+            <>
+              <PageTitle title="Food Plans" />
+              <FoodPlans />
+            </>
+          }
+        />
+        <Route
+          path="/perscribedietplan"
+          element={
+            <>
+              <PageTitle title="Perscribe Diet" />
+              <FoodPlanCreation />
+            </>
+          }
+        />
+        <Route
+          path="/perscribeexerciselan"
+          element={
+            <>
+              <PageTitle title="Perscribe Exercise" />
+              <ExercisepPlanCreation />
+            </>
+          }
+        />
+        <Route
           path="/settings"
           element={
             <>
-              <PageTitle title="Settings | TailAdmin - Tailwind CSS Admin Dashboard Template" />
+              <PageTitle title="Settings" />
               <Settings />
             </>
           }
         />
-        
+        <Route
+          path="/feedback"
+          element={
+            <>
+              <PageTitle title="Feedback" />
+              <FeedBack />
+            </>
+          }
+        />
+
+        <Route
+          path="/faq"
+          element={
+            <>
+              <PageTitle title="FAQs" />
+              <FAQ />
+            </>
+          }
+        />
       </Routes>
     </>
   );
