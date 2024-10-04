@@ -8,12 +8,17 @@ datasource db {
 }
 
 model User {
-  id       Int      @id @default(autoincrement())
-  username String   @unique
-  email    String   @unique
-  password String
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  phone     String?  // Optional field (nullable)
+  bio       String?  // Optional field (nullable)
+  avatar    String?  // Optional field (nullable)
   createdAt DateTime @default(now())
 }
+
+
 
 model Feedback {
   id              Int      @id @default(autoincrement())
