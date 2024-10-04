@@ -1,74 +1,99 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 interface LoginProps {
-  setLoading: (loading: boolean) => void; // Accept setLoading prop
+  setLoading: (loading: boolean) => void;
 }
 
 const Login: React.FC<LoginProps> = ({ setLoading }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setLoading(true); // Trigger loading state when login is clicked
+  const validationSchema = Yup.object().shape({
+    username: Yup.string().required('Username is required'),
+    password: Yup.string().required('Password is required'),
+  });
 
-    // Simulate an API call or loading delay
-    setTimeout(() => {
-      setLoading(false); // Stop the loader after the delay
-      navigate('/dashboard'); // Redirect to the dashboard route
-    }, 1500);
+  const handleLogin = async (values: { username: string; password: string }) => {
+    setLoading(true);
+    const { username, password } = values;
+
+    try {
+      const response = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Invalid username or password');
+      }
+
+      navigate('/dashboard');
+    } catch (err) {
+      setLoginError(err instanceof Error ? err.message : 'An unexpected error occurred.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-purple-500 to-indigo-600 p-6">
-      <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-6">
-          Welcome Back
-        </h2>
-        <form className="space-y-6">
-          <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Username</label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
-              placeholder="Enter your username"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium text-gray-700 mb-2">Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-indigo-500 focus:ring focus:ring-indigo-200"
-              placeholder="Enter your password"
-            />
-          </div>
-          <div className="flex items-center justify-between">
-            <label className="flex items-center">
-              <input type="checkbox" className="form-checkbox text-indigo-600" />
-              <span className="ml-2 text-sm text-gray-600">Remember me</span>
-            </label>
-            <a href="#" className="text-sm text-indigo-600 hover:underline">
-              Forgot Password?
-            </a>
-          </div>
-          <button
-            type="button"
-            onClick={handleLogin}
-            className="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-3 rounded-lg shadow-md transition duration-300"
-          >
-            Login
-          </button>
-        </form>
-        <p className="text-center text-gray-600 mt-4">
+      <div className="w-full max-w-md bg-white p-10 rounded-xl shadow-xl transition-transform transform hover:scale-105 duration-300">
+        <h2 className="text-3xl font-extrabold text-center text-gray-800 mb-8">Welcome Back</h2>
+        <Formik
+          initialValues={{ username: '', password: '' }}
+          validationSchema={validationSchema}
+          onSubmit={handleLogin}
+        >
+          {({ isSubmitting }) => (
+            <Form className="space-y-6">
+              <div>
+                <label className="block text-lg font-medium text-gray-700 mb-1">Username</label>
+                <Field
+                  type="text"
+                  name="username"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+                  placeholder="Enter your username"
+                />
+                <ErrorMessage name="username" component="div" className="text-red-600 text-sm mt-1" />
+              </div>
+              <div>
+                <label className="block text-lg font-medium text-gray-700 mb-1">Password</label>
+                <Field
+                  type="password"
+                  name="password"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition duration-200"
+                  placeholder="Enter your password"
+                />
+                <ErrorMessage name="password" component="div" className="text-red-600 text-sm mt-1" />
+              </div>
+              {loginError && <div className="text-red-600 text-sm">{loginError}</div>}
+              <div className="flex items-center justify-between mt-4">
+                <label className="flex items-center">
+                  <Field type="checkbox" className="form-checkbox text-indigo-600" />
+                  <span className="ml-2 text-sm text-gray-600">Remember me</span>
+                </label>
+                <a href="#" className="text-sm text-indigo-600 hover:underline">Forgot Password?</a>
+              </div>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md transition duration-300 transform hover:scale-105"
+              >
+                Login
+              </button>
+            </Form>
+          )}
+        </Formik>
+        <p className="text-center text-gray-600 mt-6">
           Don't have an account?{' '}
-          <a href="/auth/signup" className="text-indigo-600 hover:underline font-medium">
-            Sign Up
-          </a>
+          <a href="/register" className="text-indigo-600 hover:underline font-medium">Sign Up</a>
         </p>
       </div>
     </div>
