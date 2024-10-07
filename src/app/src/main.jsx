@@ -7,10 +7,14 @@ import './css/satoshi.css';
 import 'jsvectormap/dist/css/jsvectormap.css';
 import 'flatpickr/dist/flatpickr.min.css';
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+// Get the root element
+const rootElement = document.getElementById('root');
+
+// Render the application
+ReactDOM.createRoot(rootElement).render(
   <React.StrictMode>
     <Router>
       <App />
     </Router>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
