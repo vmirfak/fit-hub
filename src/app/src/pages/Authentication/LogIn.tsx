@@ -16,7 +16,7 @@ const Login: React.FC<LoginProps> = ({ setLoading }) => {
     password: Yup.string().required('Password is required'),
   });
 
-  const handleLogin = async (values: { username: string; password: string }) => {
+  /*const handleLogin = async (values: { username: string; password: string }) => {
     setLoading(true);
     const { username, password } = values;
 
@@ -40,6 +40,18 @@ const Login: React.FC<LoginProps> = ({ setLoading }) => {
     } finally {
       setLoading(false);
     }
+  };*/
+  const handleLogin = async (values: { username: string; password: string }) => {
+    setLoading(true);
+    const { username, password } = values;
+
+    // Hardcoded dummy credentials check
+    if (username === '111' && password === '111') {
+      navigate('/dashboard');
+    } else {
+      setLoginError('Invalid username or password');
+    }
+    setLoading(false);
   };
 
   return (
